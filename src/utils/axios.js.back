@@ -1,0 +1,80 @@
+import axios from 'axios'
+import qs from 'qs'
+
+const APP_ID = '2a7170f7-0431-48d2-bfd9-9c16b4831b5e';
+const APP_SECERET = '3ct7.eGG_-yFIah6T46iam-L8-Cxi-2DVF';
+const redirect_uri = 'http://localhost:3000/od'
+
+const postData = {
+  client_id: APP_ID,
+  client_secret: APP_SECERET,
+  grant_type: 'refresh_token',
+  refresh_token: '0.AAAA_y_7KM1DFEm_hOpAPBv4LPdwcSoxBNJIv9mcFrSDG15RADc.AgABAAAAAAB2UyzwtQEKR7-rWbgdcBZIAQDs_wIA9P8FaNRCElzGz04HLRGFSyVE2bAQl_hfUsw5dh4MiP2TxKKD-yGfYeMhPQ7hA4XKU2RHIW8-QRBiVvlActvsovGH1mU6323Tdf3rwKLvJX385FWHfHALdAVFlcAXL9DQzAI82OsIdV6-a5QamrfZWK1Hf0ZpGyT9fPMWG3cmegWVji5V0NTJb0le4f9kOQaqpj6JN0qQlzWyEFlOcqClqjexX8hGcEkaDq6VtmL5UBUitFPo1kR9Pnm18FU0yJb2vmw2co_yhWmm3kUg8gwZFbuRYy_7W_rc4nQa1CFuYBWa7pjwJg5P24kMIEzOZ8KfzQZYyLO819bPmIqJ4T2u0SeqrQdE7iy4IxmMfiUUllp_L_NpKBPt_K8BnoD-zsjrpRqzK25nTf3-gmJfrAM-TCsblK-4eTTeMpVIZItOdabTOgi3yV8asX4XkRphxuQxu-QxVz8wdo93qj2ngblF8wWBrcfhgohvC-vtGc8Hd5uk77OC6OcpikFa7Rg7WqB_iwqA8ABxSC8SaSKsviHTxQZf4nPSatp5M1xLFVBBGS5vSkMtTmYippO6HAMamKeXWW0P56i7PDm4PG-HLkkSRI6i9MBmr8XHEVe-1NhDDDs0eQJLvnanXPlA3a5XV3zcpo4JYUKiYdpdQkCmplidipPGZ5EPz-J5CcIykDW8mRKgo1PKHVap8PTSB68MpHTbjegYDX3Tg-WjgExu8c6ovvUVglUoSRIFkw6ADZD8gCGYMxKUjjixKzpd4Vg4X9RKS5wWSR0S0W0vAquB0juIDl5nOHaVhqXYka8nJph9kbh3RSMXSo738wqiEaoZ3TkSY_ElZBDx-WPsaPGcAgDKuCMNKJ2b4_AmjOS9omnGAzDKpCwrr7OGhIEXc2sYp5ReJrCpiRuz65mQ7HP9e9Hdg7vEO0zcMVL15TvrVhA1rw',
+  redirect_uri
+};
+
+function refToken(){
+		return new Promise((resolve,reject)=>{
+		 axios.get('/api')
+			.then(function(res) {
+				resolve(res)
+			})
+			.catch(function(error) {
+				reject(error.response.data)
+			});
+		})
+}
+// function refToken(){
+// 		return new Promise((resolve,reject)=>{
+// 		 axios.post('https://login.microsoftonline.com/common/oauth2/v2.0/token', qs.stringify(postData), {
+// 				headers: {
+// 					"Content-Type": "application/x-www-form-urlencoded"
+// 				}
+// 			})
+// 			.then(function(res) {
+// 				resolve(res)
+// 			})
+// 			.catch(function(error) {
+// 				reject(error.response.data)
+// 			});
+// 		})
+// }
+
+const instance = axios.create({
+  baseURL: 'https://graph.microsoft.com/v1.0/',
+  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  timeout: 20000
+})
+let token = 'eyJ0eXAiOiJKV1QiLCJub25jZSI6IlE5TXBwMW9OZHVYVGFfUEdhaEFMQkFHYVdWYS1KVlkzN3JzY2ZRU3RsOUEiLCJhbGciOiJSUzI1NiIsIng1dCI6ImtnMkxZczJUMENUaklmajRydDZKSXluZW4zOCIsImtpZCI6ImtnMkxZczJUMENUaklmajRydDZKSXluZW4zOCJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8yOGZiMmZmZi00M2NkLTQ5MTQtYmY4NC1lYTQwM2MxYmY4MmMvIiwiaWF0IjoxNjA1ODAzMDU0LCJuYmYiOjE2MDU4MDMwNTQsImV4cCI6MTYwNTgwNjk1NCwiYWNjdCI6MCwiYWNyIjoiMSIsImFjcnMiOlsidXJuOnVzZXI6cmVnaXN0ZXJzZWN1cml0eWluZm8iLCJ1cm46bWljcm9zb2Z0OnJlcTEiLCJ1cm46bWljcm9zb2Z0OnJlcTIiLCJ1cm46bWljcm9zb2Z0OnJlcTMiLCJjMSIsImMyIiwiYzMiLCJjNCIsImM1IiwiYzYiLCJjNyIsImM4IiwiYzkiLCJjMTAiLCJjMTEiLCJjMTIiLCJjMTMiLCJjMTQiLCJjMTUiLCJjMTYiLCJjMTciLCJjMTgiLCJjMTkiLCJjMjAiLCJjMjEiLCJjMjIiLCJjMjMiLCJjMjQiLCJjMjUiXSwiYWlvIjoiQVNRQTIvOFJBQUFBYUJUZGhhWXZLNjZ4M3ZtT0Exb0k1YWRsOVcybWpjQnRvcVkwVGQ5L0JwQT0iLCJhbXIiOlsicHdkIl0sImFwcF9kaXNwbGF5bmFtZSI6Ik15T2QiLCJhcHBpZCI6IjJhNzE3MGY3LTA0MzEtNDhkMi1iZmQ5LTljMTZiNDgzMWI1ZSIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiYTEiLCJnaXZlbl9uYW1lIjoidGVzdCIsImlkdHlwIjoidXNlciIsImlwYWRkciI6IjUyLjEzOS4xOTIuNjEiLCJuYW1lIjoidGVzdCBhMSIsIm9pZCI6Ijk2MTg1N2NhLTA4NDUtNDNhNS05Njc1LWY0ZWU1OWQwYWRkYiIsInBsYXRmIjoiMyIsInB1aWQiOiIxMDAzMjAwMEMzMEI0MkNEIiwicmgiOiIwLkFBQUFfeV83S00xREZFbV9oT3BBUEJ2NExQZHdjU294Qk5KSXY5bWNGclNERzE1UkFEYy4iLCJzY3AiOiJGaWxlcy5SZWFkV3JpdGUuQWxsIFNpdGVzLlJlYWQuQWxsIFVzZXIuUmVhZCBwcm9maWxlIG9wZW5pZCBlbWFpbCIsInN1YiI6IkpiMVgwZG14VjNzWFN2NFhvWHJhX1d2TThqa0x0T1o0OGFlM0hOV0tYQUkiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiTkEiLCJ0aWQiOiIyOGZiMmZmZi00M2NkLTQ5MTQtYmY4NC1lYTQwM2MxYmY4MmMiLCJ1bmlxdWVfbmFtZSI6ImExQDk5bWUub25taWNyb3NvZnQuY29tIiwidXBuIjoiYTFAOTltZS5vbm1pY3Jvc29mdC5jb20iLCJ1dGkiOiIzNElDZHpWVmtraXljSEYtek9kV0FBIiwidmVyIjoiMS4wIiwid2lkcyI6WyJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXSwieG1zX3N0Ijp7InN1YiI6ImE4MVJYdGl5eUdaVGlqYlFLNml0NWx5MnA1U0pPYmM1eUVqNlVuWmFnelkifSwieG1zX3RjZHQiOjE1OTA0NTg3ODF9.varYBnilv8XD430KTp2dt_Par50CR0eOv70o-Ojo9bb_6B7wbJweKhGFMePgfOxh_yDNTLHxr_jlwi-kGU_8uDn6CwJEE1eKlv1twO6kD5fUg9GrQBP6wuWenCoHBe0lTXnhUFD7XrwHb8JbzoeVL6RxmM4sFE3TVXz3b9gW1tqHAsngOJv26ED0iF76ckqt_nWOr_ZUSm2Mt9MZF11wGbACI24Q2qW1sSCzHQ4GulMxwUbbp93ALQKBhYbvXZ97EuZc_b3C6ysWdbpU6GmMriByBJinhVpFijMUZHOIiVu-JmHOKYmosJ4V1OP2DgwwirA61ZboyQsKft86ptQjAQ'
+// 路由请求拦截
+// http request 拦截器
+instance.interceptors.request.use(
+  config => {
+    config.headers.Authorization = `Bearer ${token}`
+		// console.log(config)
+    return config
+  },
+  err => {
+    return Promise.reject(err)
+  })
+
+// 路由响应拦截
+// http response 拦截器
+instance.interceptors.response.use(response => response, error => {
+  const status = error.response ? error.response.status : null
+
+  if (status === 401) {
+    return refToken()
+      .then(response => {
+      error.config.headers['Authorization'] = 'Bearer ' + response.data.access_token
+				token = response.data.access_token
+				error.config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+				error.config.baseURL = 'https://graph.microsoft.com/v1.0/'
+				return  instance(error.response.config)
+        	}).catch(error => {
+        		return Promise.reject(error)
+        	})
+    }
+})
+
+export default instance
