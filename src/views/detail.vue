@@ -82,7 +82,7 @@
             </v-toolbar>
             <v-card-text>
 
- <v-row justify="center" v-if=type>
+ <v-row justify="center" v-if="type==='image'">
     <v-img
       :src=link
       lazy-src="https://picsum.photos/id/11/100/60"
@@ -104,10 +104,20 @@
     </v-img>
   </v-row>
 
-<div id="app" v-else>
+<div id="app" v-else-if="type==='video'">
   <div class="player-container">
     <vue-core-video-player :src=link></vue-core-video-player>
   </div>
+</div>
+
+<div v-else-if="type==='editor'">
+    <div class="container">
+      <code-editor
+        :options="options"
+        :value="content"
+        style="height: 400px; width: 600px;"
+      ></code-editor>
+    </div>
 </div>
 
             </v-card-text>
@@ -122,8 +132,13 @@
 
 <script>
 import Vue from 'vue'
+import axios from 'axios'
+import CodeEditor  from '@/components/editor.vue'
 const request = require('../utils/request.js')
 export default {
+  components:{
+    CodeEditor
+  },
   data () {
     return {
       list: [],
@@ -132,6 +147,12 @@ export default {
       link: '',
       width: 1000,
       type: false,
+      content: "safdssssde1",
+      options: {
+        language: "html",
+        theme: 'vs',
+        readOnly: false
+      }
     }
   },
   mounted() {
@@ -168,12 +189,22 @@ export default {
       if(/\.(jpg|png)$/.test(item.name)){
         this.link = item['@microsoft.graph.downloadUrl']
         this.dialog = true
-        this.type = true
+        this.type = 'image'
       }
       if(/\.(mp4|avi)$/.test(item.name)){
         this.link = item['@microsoft.graph.downloadUrl']
         this.dialog = true
-        this.type = false
+        this.type = 'video'
+      }
+      if(/\.(json|js|html|css)$/.test(item.name)){
+        this.dialog = true
+        this.type = 'text'
+        axios(item['@microsoft.graph.downloadUrl']).then(res=>{
+          console.log(res.data)
+          this.type = 'editor'
+          this.content = res.data
+          console.log(this.content)
+          })
       }
       console.log(item)
     },
@@ -185,10 +216,14 @@ export default {
 </script>
 
 <style scoped="scoped">
-  .play-root {
-    width: 770px;
-    height: 420px;
-    background-color: coral;
-    margin: 0 auto;
-  }
+.play-root {
+  width: 770px;
+  height: 420px;
+  background-color: coral;
+  margin: 0 auto;
+}
+.container {
+  text-align: left;
+  padding: 10px;
+}
 </style>
