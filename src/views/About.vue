@@ -61,12 +61,15 @@
       //   .catch(err=>{console.log(err)})
       // }
       getDetail(id){
-       this.$router.push({
-         path: `/detail/${id}`,
-       })
+       // this.$router.push({
+       //   path: `/detail/${id}`,
+       // })       
+       this.$router.push('/detail')
+       this.$store.commit('setid',id)
       }
     },
     mounted() {
+      console.log(this.$store.state)
       request.get()
         .then(res => {
           this.folders = res.data.value

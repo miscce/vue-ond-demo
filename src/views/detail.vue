@@ -3,6 +3,7 @@
     <v-toolbar
       color="light-blue"
       dark
+      max-height=100
     >
       <v-app-bar-nav-icon></v-app-bar-nav-icon>
 
@@ -23,6 +24,11 @@
       subheader
       two-line
     >
+    <v-list-item>
+      <v-list-item-title style="width: 60%;flex: none;">文件</v-list-item-title>
+      <v-list-item-title>时间</v-list-item-title>
+      <v-list-item-title>大小</v-list-item-title>
+    </v-list-item>
       <v-list-item
         v-for="item in list"
         :key="item.id"
@@ -36,8 +42,9 @@
             {{item.icon}}
           </v-icon>
         </v-list-item-avatar>
-        <v-list-item-title v-text="item.name" class="d-flex flex-row mb-6"></v-list-item-title>
-        <v-list-item-action class="d-flex flex-row mb-6">
+        <v-list-item-title v-text="item.name" class="d-flex align-start" style="width: 60%;flex: none;">
+        </v-list-item-title>
+        <v-list-item-action class="d-flex flex-row" style="width: 100%">
             <v-list-item-title v-text="item.lastModifiedDateTime"></v-list-item-title>
             <v-list-item-title v-text="item.size"></v-list-item-title>
         </v-list-item-action>
@@ -57,9 +64,9 @@
         >
           <v-card tile>
             <v-toolbar
-              flat
               dark
               color="primary"
+              max-height=60
             >
               <v-btn
                 icon
@@ -105,8 +112,12 @@
   </v-row>
 
 <div id="app" v-else-if="type==='video'">
-  <div class="player-container">
-    <vue-core-video-player :src=link></vue-core-video-player>
+  <div class="player-container" style="height: 100%; width: auto;">
+          <video-player class="video-player vjs-custom-skin" 
+            ref="videoPlayer" 
+            :playsinline="true" 
+            :options="playerOptions">
+      </video-player>
   </div>
 </div>
 
@@ -115,13 +126,13 @@
       <code-editor
         :options="options"
         :value="content"
-        style="height: 400px; width: 600px;"
+        style="height: 500px; width: 100%;"
+        class="editor"
       ></code-editor>
     </div>
 </div>
 
             </v-card-text>
-            <div style="flex: 1 1 auto;"></div>
           </v-card>
         </v-dialog>
       </v-row>
@@ -152,11 +163,33 @@ export default {
         language: "html",
         theme: 'vs',
         readOnly: false
+      },
+      playerOptions: {
+        playbackRates: [0.5, 1.0, 1.5, 2.0], // 可选的播放速度
+        autoplay: false, // 如果为true,浏览器准备好时开始回放。
+        muted: false, // 默认情况下将会消除任何音频。
+        loop: false, // 是否视频一结束就重新开始。
+        preload: 'auto', // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
+        language: 'zh-CN',
+        aspectRatio: '16:9', // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
+        fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
+        sources: [{
+          type: "video/mp4", // 类型
+          src: '' // url地址
+        }],
+        poster: '', // 封面地址
+        notSupportedMessage: '此视频暂无法播放，请稍后再试', // 允许覆盖Video.js无法播放媒体源时显示的默认信息。
+        controlBar: {
+          timeDivider: true, // 当前时间和持续时间的分隔符
+          durationDisplay: true, // 显示持续时间
+          remainingTimeDisplay: false, // 是否显示剩余时间功能
+          fullscreenToggle: true // 是否显示全屏按钮
+        }
       }
     }
   },
   mounted() {
-    const id = this.$route.params.id
+    const id = this.$store.state.id || localStorage.getItem('id');
     request.getDetail(id)
     .then(res=>{
       // console.log(res.data.value[0].['@microsoft.graph.downloadUrl'])
@@ -186,12 +219,17 @@ export default {
   },
   methods:{
     getDetail(item){
-      if(/\.(jpg|png)$/.test(item.name)){
+      if(item.file === undefined){
+        this.$router.push(`/detail/${item.name}`)
+        return
+      }
+      if(/image\/\w+/.test(item.file.mimeType)){
         this.link = item['@microsoft.graph.downloadUrl']
         this.dialog = true
         this.type = 'image'
       }
-      if(/\.(mp4|avi)$/.test(item.name)){
+      if(/video\/\w+/.test(item.file.mimeType)){
+        this.playerOptions.sources[0].src = item['@microsoft.graph.downloadUrl']
         this.link = item['@microsoft.graph.downloadUrl']
         this.dialog = true
         this.type = 'video'
@@ -200,13 +238,10 @@ export default {
         this.dialog = true
         this.type = 'text'
         axios(item['@microsoft.graph.downloadUrl']).then(res=>{
-          console.log(res.data)
           this.type = 'editor'
           this.content = res.data
-          console.log(this.content)
           })
       }
-      console.log(item)
     },
     onPlay() {
       this.dp.play()
