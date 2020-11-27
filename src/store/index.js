@@ -13,6 +13,7 @@ export default new Vuex.Store({
         localStorage.removeItem('id')
       } 
       localStorage.setItem('id', payload)
+      localStorage.setItem('path', '345')
     }
   },
   actions: {

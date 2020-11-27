@@ -1,34 +1,20 @@
 <template>
   <v-app>
-    <v-toolbar
-      color="light-blue"
-      dark
-      max-height=100
-    >
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
-
-      <v-toolbar-title>My files</v-toolbar-title>
-
-      <v-spacer></v-spacer>
-
-      <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-icon>mdi-view-module</v-icon>
-      </v-btn>
-    </v-toolbar>
-
+    <v-card>
     <v-list
       subheader
       two-line
     >
-    <v-list-item>
-      <v-list-item-title style="width: 60%;flex: none;">文件</v-list-item-title>
-      <v-list-item-title>时间</v-list-item-title>
-      <v-list-item-title>大小</v-list-item-title>
+  <v-list-item>
+      <v-list-item-title style="width: 70%;flex: none;">文件</v-list-item-title>
+      <v-list-item-action class="d-flex flex-row" style="width: 100%">
+        <v-list-item-title>时间</v-list-item-title>
+        <v-list-item-title>大小</v-list-item-title>
+      </v-list-item-action>
     </v-list-item>
+
+    <v-divider></v-divider>
+
       <v-list-item
         v-for="item in list"
         :key="item.id"
@@ -57,13 +43,19 @@
       >
         <v-dialog
           v-model="dialog"
-          fullscreen
-          hide-overlay
-          transition="dialog-bottom-transition"
-          scrollable
+          width="600"
         >
-          <v-card tile>
-            <v-toolbar
+          <v-card
+          >
+        <v-card-title class="headline grey lighten-2">
+          Privacy Policy
+          <v-spacer></v-spacer>
+          <v-btn text>
+              <span>Exit</span>
+              <v-icon right>exit_to_app</v-icon>
+          </v-btn>
+        </v-card-title>
+<!--            <v-toolbar
               dark
               color="primary"
               max-height=60
@@ -86,8 +78,8 @@
                   Save
                 </v-btn>
               </v-toolbar-items>
-            </v-toolbar>
-            <v-card-text>
+            </v-toolbar> -->
+            <!-- <v-card-text> -->
 
  <v-row justify="center" v-if="type==='image'">
     <v-img
@@ -113,9 +105,9 @@
 
 <div id="app" v-else-if="type==='video'">
   <div class="player-container" style="height: 100%; width: auto;">
-          <video-player class="video-player vjs-custom-skin" 
-            ref="videoPlayer" 
-            :playsinline="true" 
+          <video-player class="video-player vjs-custom-skin"
+            ref="videoPlayer"
+            :playsinline="true"
             :options="playerOptions">
       </video-player>
   </div>
@@ -137,7 +129,7 @@
         </v-dialog>
       </v-row>
     </div>
-
+    </v-card>
  </v-app>
 </template>
 
@@ -159,6 +151,8 @@ export default {
       width: 1000,
       type: false,
       content: "safdssssde1",
+      drawer: false,
+      group: null,
       options: {
         language: "html",
         theme: 'vs',
@@ -189,6 +183,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.$route.params)
     const id = this.$store.state.id || localStorage.getItem('id');
     request.getDetail(id)
     .then(res=>{
@@ -220,6 +215,7 @@ export default {
   methods:{
     getDetail(item){
       if(item.file === undefined){
+        this.$store.commit('setid',item.id)
         this.$router.push(`/detail/${item.name}`)
         return
       }
@@ -243,10 +239,22 @@ export default {
           })
       }
     },
-    onPlay() {
-      this.dp.play()
+    resetData() {
+        // if(this.$route.fullPath=='/strategy'){
+            //在这里获取并处理该路由下所需要的数据。
+    // }
+    console.log(1)
+    this.$router.go(0)
+    }
+  },
+    watch: {
+          $route:{
+              handler:'resetData',
+          },
+                group () {
+        this.drawer = false
       }
-  }
+    }
 }
 </script>
 
